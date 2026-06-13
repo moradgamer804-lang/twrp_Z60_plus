@@ -68,7 +68,7 @@ jobs:
           cd ~/twrp
           source build/envsetup.sh
           lunch twrp_Z60_plus-eng
-          ALLOW_MISSING_DEPENDENCIES=true make recoveryimage -j$(nproc --all) 2>&1 | tee build.log
+          ALLOW_MISSING_DEPENDENCIES=true make bootimage -j$(nproc --all) 2>&1 | tee build.log
 
       - name: Upload boot.img
         uses: actions/upload-artifact@v4
