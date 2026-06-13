@@ -1,3 +1,9 @@
-$(LOCAL_PATH)/recovery.fstab:$(TARGET_RECOVERY_ROOT_OUT)/system/etc/recovery.fstab
-$(LOCAL_PATH)/recovery.fstab:$(TARGET_RECOVERY_ROOT_OUT)/etc/recovery.fstab
-$(LOCAL_PATH)/prebuilt/dtbo.img:$(TARGET_OUT_PRODUCT)/dtbo.img
+LOCAL_PATH := $(call my-dir)
+
+include $(CLEAR_VARS)
+LOCAL_MODULE := fstab.twrp
+LOCAL_SRC_FILES := recovery.fstab
+LOCAL_MODULE_TAGS := optional
+LOCAL_MODULE_CLASS := ETC
+LOCAL_MODULE_PATH := $(TARGET_RECOVERY_ROOT_OUT)/etc
+include $(BUILD_PREBUILT)

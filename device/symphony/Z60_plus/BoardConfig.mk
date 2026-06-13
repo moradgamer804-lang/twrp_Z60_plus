@@ -1,6 +1,5 @@
-LOCAL_PATH := $(call my-dir)
-
 TARGET_SUPPORTS_64_BIT_APPS := false
+TARGET_RECOVERY_FSTAB := device/symphony/Z60_plus/recovery.fstab
 TARGET_BOARD_PLATFORM := ums9230
 TARGET_BOARD_PLATFORM_GPU := mali-g57
 TARGET_ARCH := arm64
