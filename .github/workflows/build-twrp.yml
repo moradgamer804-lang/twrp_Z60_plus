@@ -1,0 +1,101 @@
+name: Build TWRP for Z60+
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      - name: Checkout device tree
+        uses: actions/checkout@v3
+        with:
+          path: device_tree
+
+      - name: Maximize space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/local/lib/android
+          df -h
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq bc bison build-essential ccache curl flex g++-multilib
+          sudo apt-get install -y -qq gcc-multilib git gnupg gperf imagemagick lib32ncurses5-dev
+          sudo apt-get install -y -qq lib32readline-dev lib32z1-dev liblz4-tool libncurses5-dev
+          sudo apt-get install -y -qq libsdl1.2-dev libssl-dev libxml2 libxml2-utils lzop
+          sudo apt-get install -y -qq pngcrush rsync schedtool squashfs-tools xsltproc
+          sudo apt-get install -y -qq zip zlib1g-dev libwxgtk3.0-gtk3-dev openjdk-11-jdk
+          sudo apt-get install -y -qq python3 python3-pip
+          pip3 install jinja2
+
+      - name: Setup repo
+        run: |
+          git config --global user.name "TWRP Builder"
+          git config --global user.email "builder@twrp.local"
+          mkdir -p ~/bin
+          curl -sLo ~/bin/repo https://storage.googleapis.com/git-repo-downloads/repo
+          chmod +x ~/bin/repo
+          echo "$HOME/bin" >> $GITHUB_PATH
+
+      - name: Init TWRP source
+        run: |
+          mkdir -p ~/twrp
+          cd ~/twrp
+          repo init -u https://github.com/minimal-manifest-twrp/platform_manifest_twrp_aosp.git -b twrp-12.1 --depth=1
+
+      - name: Copy device tree
+        run: |
+          mkdir -p ~/twrp/device/symphony/Z60_plus
+          cp -r $GITHUB_WORKSPACE/device_tree/device/symphony/Z60_plus/* ~/twrp/device/symphony/Z60_plus/
+
+      - name: Sync source
+        run: |
+          cd ~/twrp
+          repo sync -j$(nproc --all) -c --force-sync --no-clone-bundle --no-tags 2>&1 | tail -20
+
+      - name: Build recovery
+        run: |
+          cd ~/twrp
+          source build/envsetup.sh
+          lunch twrp_Z60_plus-eng
+          make recoveryimage -j$(nproc --all) 2>&1 | tee build.log
+
+      - name: Upload boot.img
+        uses: actions/upload-artifact@v3
+        with:
+          name: twrp-Z60_plus
+          path: |
+            ~/twrp/out/target/product/Z60_plus/boot.img
+            ~/twrp/out/target/product/Z60_plus/recovery.img
+            ~/twrp/build.log
+          if-no-files-found: error
+
+      - name: Create Release
+        if: success()
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ~/twrp/out/target/product/Z60_plus/boot.img
+            ~/twrp/out/target/product/Z60_plus/recovery.img
+          name: "TWRP for Symphony Z60+"
+          tag_name: "v1.0"
+          body: |
+            TWRP for Symphony Z60+ (Unisoc T616)
+            Android 12 | Virtual A/B
+
+            ## Flash Instructions
+            ```
+            fastboot flash boot_a boot.img
+            fastboot flash vbmeta --disable-verity --disable-verification vbmeta.img
+            fastboot reboot recovery
+            ```

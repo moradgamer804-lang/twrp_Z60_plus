@@ -1,0 +1,35 @@
+# TWRP recovery fstab for Symphony Z60+ (Unisoc T616 / UMS9230)
+# Virtual A/B | FBE v2 encryption
+
+/boot                 emmc            /dev/block/by-name/boot_a
+/vendor_boot          emmc            /dev/block/by-name/vendor_boot_a
+/init_boot            emmc            /dev/block/by-name/init_boot_a
+/dtb                  emmc            /dev/block/by-name/dtb_a
+/dtbo                 emmc            /dev/block/by-name/dtbo_a
+/vbmeta               emmc            /dev/block/by-name/vbmeta_a
+/vbmeta_system        emmc            /dev/block/by-name/vbmeta_system_a
+/vbmeta_vendor        emmc            /dev/block/by-name/vbmeta_vendor_a
+/vbmeta_product       emmc            /dev/block/by-name/vbmeta_product_a
+/misc                 emmc            /dev/block/by-name/misc
+
+/system               ext4            /dev/block/by-name/system_a       flags=wait,avb=vbmeta_system,slotselect
+/system_ext           ext4            /dev/block/dm-1                   flags=wait,avb=vbmeta_system_ext,slotselect
+/vendor               ext4            /dev/block/dm-4                   flags=wait,avb=vbmeta_vendor,slotselect
+/product              ext4            /dev/block/dm-0                   flags=wait,avb=vbmeta_product,slotselect
+/vendor_dlkm          ext4            /dev/block/dm-5                   flags=wait
+
+/data                 f2fs            /dev/block/by-name/userdata       flags=latemount,wait,check,fileencryption=aes-256-xts:aes-256-cts:v2+inlinecrypt_optimized,keydirectory=/metadata/vold/metadata_encryption
+/metadata             ext4            /dev/block/by-name/metadata       flags=noatime,nosuid,nodev,noexec,wait,formattable
+/cache                ext4            /dev/block/by-name/cache
+
+/modem                emmc            /dev/block/by-name/l_modem_a
+/persist              ext4            /dev/block/by-name/persist
+/prodnv               ext4            /dev/block/by-name/prodnv
+
+/trustos              emmc            /dev/block/by-name/trustos_a
+/sml                  emmc            /dev/block/by-name/sml_a
+/teecfg               emmc            /dev/block/by-name/teecfg_a
+
+/uboot                emmc            /dev/block/by-name/uboot_a
+/logo                 emmc            /dev/block/by-name/logo
+/fbootlogo            emmc            /dev/block/by-name/fbootlogo
