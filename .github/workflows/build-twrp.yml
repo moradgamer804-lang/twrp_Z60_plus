@@ -66,8 +66,8 @@ jobs:
       - name: Build recovery
         run: |
           cd ~/twrp
-          # Symlink fstab to build root for build system resolution
-          ln -sf device/symphony/Z60_plus/recovery.fstab recovery.fstab
+          # Provide fstab at the exact path the build system expects
+          sudo cp device/symphony/Z60_plus/recovery.fstab /recovery.fstab
           source build/envsetup.sh
           lunch twrp_Z60_plus-eng
           ALLOW_MISSING_DEPENDENCIES=true make bootimage -j$(nproc --all) 2>&1 | tee build.log
