@@ -14,7 +14,7 @@ jobs:
 
     steps:
       - name: Checkout device tree
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: device_tree
 
@@ -71,7 +71,7 @@ jobs:
           make recoveryimage -j$(nproc --all) 2>&1 | tee build.log
 
       - name: Upload boot.img
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: twrp-Z60_plus
           path: |
