@@ -1,0 +1,4 @@
+cc_defaults {
+    name: "vts_proto_fuzzer_default",
+    compile_multilib: "first",
+}
