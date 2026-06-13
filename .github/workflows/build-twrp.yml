@@ -70,6 +70,8 @@ jobs:
           sudo cp device/symphony/Z60_plus/recovery.fstab /recovery.fstab
           source build/envsetup.sh
           lunch twrp_Z60_plus-eng
+          # Create empty root/ directory for recovery ramdisk rsync base
+          mkdir -p out/target/product/Z60_plus/root
           ALLOW_MISSING_DEPENDENCIES=true make bootimage -j$(nproc --all) 2>&1 | tee build.log
 
       - name: Upload boot.img
